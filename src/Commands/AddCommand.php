@@ -25,6 +25,9 @@ class AddCommand extends Command
             $commandVerb,
             $this->getCommandPassiveVerb()
         );
+
+        parent::__construct();
+
         $this->description = sprintf('%s all given Numbers', ucfirst($commandVerb));
     }
 
