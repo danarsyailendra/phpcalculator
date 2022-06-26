@@ -26,9 +26,9 @@ class AddCommand extends Command
             $this->getCommandPassiveVerb()
         );
 
-        parent::__construct();
-
         $this->description = sprintf('%s all given Numbers', ucfirst($commandVerb));
+
+        parent::__construct();
     }
 
     protected function getCommandVerb(): string
@@ -47,7 +47,12 @@ class AddCommand extends Command
         $description = $this->generateCalculationDescription($numbers);
         $result = $this->calculateAll($numbers);
 
-        $this->comment(sprintf('%s = %s', $description, $result));
+        if ($result === false) {
+            $this->comment("Numbers must be numeric");
+        } else {
+            $this->comment(sprintf('%s = %s', $description, $result));
+        }
+
     }
 
     protected function getInput(): array
@@ -76,12 +81,15 @@ class AddCommand extends Command
     protected function calculateAll(array $numbers)
     {
         $number = array_pop($numbers);
+        if (is_numeric($number)) {
+            if (count($numbers) <= 0) {
+                return $number;
+            }
 
-        if (count($numbers) <= 0) {
-            return $number;
+            return $this->calculate($this->calculateAll($numbers), $number);
+        } else {
+            return false;
         }
-
-        return $this->calculate($this->calculateAll($numbers), $number);
     }
 
     /**
