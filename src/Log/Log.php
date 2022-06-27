@@ -134,12 +134,12 @@ class Log
                     $this->removeLog($path, $id);
                 }
             }
-            return sprintf('Data with ID %s is removed',$id);
-        }else{
+            return sprintf('Data with ID %s is removed', $id);
+        } else {
             if ($this->driver != 'composite') {
                 $path = $this->config[$this->driver]['path'];
                 $this->clearLog($path);
-            }else{
+            } else {
                 $paths = $this->resolvePath();
                 foreach ($paths as $path) {
                     $this->clearLog($path);
@@ -178,9 +178,72 @@ class Log
         }
     }
 
-    protected function clearLog($path){
+    protected function clearLog($path)
+    {
         if (file_exists($path)) {
             file_put_contents($path, "");
         }
+    }
+
+    public function showLog($id = null)
+    {
+        $headers = ["ID", "Command", "Operation", "Result"];
+        if ($id != null) {
+            if ($this->driver != 'composite') {
+                $path = $this->config[$this->driver]['path'];
+                return ["headers" => $headers, "body" => $this->displaySpecificLog($path, $id)];
+            } else {
+                $paths = $this->resolvePath();
+                $data = [];
+                sort($paths);
+                foreach ($paths as $path) {
+                    $data = $this->displaySpecificLog($path, $id);
+                    if (!empty($data)) {
+                        break;
+                    }
+                }
+                return ["headers" => $headers, "body" => $data];
+            }
+        }else{
+            if ($this->driver != 'composite') {
+                $path = $this->config[$this->driver]['path'];
+                return ["headers" => $headers, "body" => $this->displayAllLog($path)];
+            }else{
+                $path = $this->config['file']['path'];
+                return ["headers" => $headers, "body" => $this->displayAllLog($path)];
+            }
+        }
+    }
+
+    protected function displaySpecificLog($path, $id): array
+    {
+        $ret = [];
+        if (file_exists($path)) {
+            $lines = file($path);
+            foreach ($lines as $line) {
+                $exp = explode("|", $line);
+                if ($exp[1] == $id) {
+                    $ret[] = [$exp[1], $exp[2], $exp[3], $exp[4]];
+                }
+
+            }
+        }
+
+        return $ret;
+    }
+
+    protected function displayAllLog($path): array
+    {
+        $ret = [];
+        if (file_exists($path)) {
+            $lines = file($path);
+            foreach ($lines as $line) {
+                $exp = explode("|", $line);
+                $ret[] = [$exp[1], $exp[2], $exp[3], $exp[4]];
+
+            }
+        }
+
+        return $ret;
     }
 }
