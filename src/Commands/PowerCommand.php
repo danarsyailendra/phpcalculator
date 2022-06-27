@@ -3,6 +3,7 @@
 namespace Jakmall\Recruitment\Calculator\Commands;
 
 use Illuminate\Console\Command;
+use Jakmall\Recruitment\Calculator\Operation;
 
 class PowerCommand extends Command
 {
@@ -26,9 +27,9 @@ class PowerCommand extends Command
             $this->getCommandPassiveVerb()
         );
 
-        parent::__construct();
-
         $this->description = sprintf('%s all given Numbers', ucfirst($commandVerb));
+
+        parent::__construct();
     }
 
     protected function getCommandVerb(): string
@@ -44,61 +45,13 @@ class PowerCommand extends Command
     public function handle(): void
     {
         $numbers = $this->getInput();
-        $description = $this->generateCalculationDescription($numbers);
-        $result = $this->calculateAll($numbers);
-
-        if ($result === false){
-            $this->comment("Numbers must be numeric");
-        }else{
-            $this->comment(sprintf('%s = %s', $description, $result));
-        }
+        $operation = new Operation();
+        $result = $operation->call($this->getCommandVerb(), $numbers);
+        $this->comment($result);
     }
 
     protected function getInput(): array
     {
         return $this->argument('numbers');
-    }
-
-    protected function generateCalculationDescription(array $numbers): string
-    {
-        $operator = $this->getOperator();
-        $glue = sprintf(' %s ', $operator);
-
-        return implode($glue, $numbers);
-    }
-
-    protected function getOperator(): string
-    {
-        return '^';
-    }
-
-    /**
-     * @param array $numbers
-     *
-     * @return float|int
-     */
-    protected function calculateAll(array $numbers)
-    {
-        $number = array_pop($numbers);
-        if (is_numeric($number)) {
-            if (count($numbers) <= 0) {
-                return $number;
-            }
-
-            return $this->calculate($this->calculateAll($numbers), $number);
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @param int|float $number1
-     * @param int|float $number2
-     *
-     * @return int|float
-     */
-    protected function calculate($number1, $number2)
-    {
-        return pow($number1,$number2);
     }
 }
