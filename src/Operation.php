@@ -4,6 +4,12 @@ namespace Jakmall\Recruitment\Calculator;
 
 class Operation
 {
+    protected $log;
+    public function __construct()
+    {
+        $this->log = new Log\Log();
+    }
+
     public function call(string $command = null, array $param = []): string
     {
         if ($command == 'add') {
@@ -25,7 +31,9 @@ class Operation
     {
         $operator = "+";
 
-        return $this->getDescription($operator, $numbers);
+        $description = $this->getDescription($operator, $numbers);
+        $this->insertLog($description,"Add");
+        return $description;
 
     }
 
@@ -33,14 +41,18 @@ class Operation
     {
         $operator = "-";
 
-        return $this->getDescription($operator, $numbers);
+        $description = $this->getDescription($operator, $numbers);
+        $this->insertLog($description,"Subtract");
+        return $description;
     }
 
     private function divide(array $numbers): string
     {
         $operator = "/";
 
-        return $this->getDescription($operator, $numbers);
+        $description = $this->getDescription($operator, $numbers);
+        $this->insertLog($description,"Divide");
+        return $description;
 
     }
 
@@ -48,7 +60,9 @@ class Operation
     {
         $operator = "*";
 
-        return $this->getDescription($operator, $numbers);
+        $description = $this->getDescription($operator, $numbers);
+        $this->insertLog($description,"Multiply");
+        return $description;
 
     }
 
@@ -56,15 +70,22 @@ class Operation
     {
         $operator = "^";
 
-        return $this->getDescription($operator, $numbers);
+        $description = $this->getDescription($operator, $numbers);
+        $this->insertLog($description,"Power");
+        return $description;
 
+    }
+
+    private function glueNumbers(string $operator, array $numbers): string
+    {
+        $glue = sprintf(' %s ', $operator);
+
+        return implode($glue, $numbers);
     }
 
     private function getDescription(string $operator, array $numbers): string
     {
-        $glue = sprintf(' %s ', $operator);
-
-        $description = implode($glue, $numbers);
+        $description = $this->glueNumbers($operator, $numbers);
         $result = $this->calculateAll($operator, $numbers);
         if ($result === false) {
             return "Numbers must be numeric";
@@ -157,5 +178,11 @@ class Operation
     private function calculatePower(float $number1, float $number2)
     {
         return pow($number1,$number2);
+    }
+
+    private function insertLog(string $description,string $operation)
+    {
+        $description = str_replace(" = ","|",$description);
+        $this->log->insertLog(sprintf('%s|%s',$operation,$description));
     }
 }
