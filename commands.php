@@ -6,5 +6,6 @@ return [
     \Jakmall\Recruitment\Calculator\Commands\MultiplyCommand::class,
     \Jakmall\Recruitment\Calculator\Commands\PowerCommand::class,
     \Jakmall\Recruitment\Calculator\Commands\SubtractCommand::class,
-    \Jakmall\Recruitment\Calculator\Commands\HistoryClearCommand::class
+    \Jakmall\Recruitment\Calculator\Commands\HistoryClearCommand::class,
+    \Jakmall\Recruitment\Calculator\Commands\HistoryListCommand::class,
 ];
