@@ -170,7 +170,7 @@ class Log
         if (file_exists($path)) {
             $file = file($path);
             $index = $this->findIndex($file, $id);
-            if ($index != null) {
+            if ($index !== null) {
                 unset($file[$index]);
                 file_put_contents($path, implode("", $file));
             }
