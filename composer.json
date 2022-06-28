@@ -11,7 +11,9 @@
         "illuminate/events": "5.8.*",
         "illuminate/support": "5.8.*",
         "monolog/monolog": "^2.7",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "illuminate/http": "5.8.*",
+        "illuminate/routing": "5.8.*"
     },
     "autoload": {
         "psr-4": {
